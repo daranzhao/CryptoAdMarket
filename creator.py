@@ -16,7 +16,18 @@ class Creator(id, max_p, total_coin):
 		self.prev_popularity = self.popularity()
 		self.pop_index += np.random.uniform(self.low,self.high)
 
-	def asks(prev_round, bidders):
-		if prev_round == None:
-
+	# prev_bids is list of bid_lsts (list of triples)
+	def asks(prev_bids, bidders):
+		if prev_bids == None:
+			accum = 0
+			for bidder in bidders:
+				accum += bidder.val_to_bid(0.25*self.popularity())
+			return accum/len(bidders)
 		else:
+			my_prev_bids = []
+			for bid_lst in prev_bids:
+				for bid in bid_lst:
+					if bid[0] == self.id:
+						# bid = (creator, bid price, amount)
+						my_prev_bids.append(bid[1])
+			return np.average(my_prev_bids)*self.popularity()/self.prev_popularity
