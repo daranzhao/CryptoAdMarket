@@ -2,7 +2,7 @@ import numpy as np
 
 class Advertiser:
   def __init__(self, id, budget, num_creators):
-    self.id = id
+    self.id = id # 0 through A
     self.budget = budget
     self.wallet = [[0,0]] * num_creators # [amount, avg price paid]
     self.quality = np.random.uniform(0,1)
@@ -12,7 +12,7 @@ class Advertiser:
   # take in creator_id, and value and return
   # bid price
   def val_to_bid(self, value):
-    return 2/3 * value
+    return 2./3 * value
 
   # use function above and some logic to return
   # tuple of creator_id, bid, and amount

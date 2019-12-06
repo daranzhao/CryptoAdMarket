@@ -18,12 +18,12 @@ class Creator:
 		self.pop_index += np.random.uniform(self.low,self.high)
 
 	# prev_bids is list of bid_lsts (list of triples)
-	def asks(self, prev_bids, bidders):
+	def asks(self, prev_bids, advertisers):
 		if prev_bids == None:
 			accum = 0
-			for bidder in bidders:
-				accum += bidder.val_to_bid(0.25*self.popularity())
-			return [(self.id, accum/len(bidders), self.coins)]
+			for advertiser in advertisers:
+				accum += advertiser.val_to_bid(0.25*self.popularity())
+			return [(self.id, accum/len(advertisers), self.coins)]
 		else:
 			my_prev_bids = []
 			for bid_lst in prev_bids:
