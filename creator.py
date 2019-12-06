@@ -22,7 +22,7 @@ class Creator(id, max_p, total_coin):
 			accum = 0
 			for bidder in bidders:
 				accum += bidder.val_to_bid(0.25*self.popularity())
-			return accum/len(bidders)
+			return [(self.id, accum/len(bidders), self.coins)]
 		else:
 			my_prev_bids = []
 			for bid_lst in prev_bids:
@@ -30,4 +30,5 @@ class Creator(id, max_p, total_coin):
 					if bid[0] == self.id:
 						# bid = (creator, bid price, amount)
 						my_prev_bids.append(bid[1])
-			return np.average(my_prev_bids)*self.popularity()/self.prev_popularity
+			ask_amount = np.average(my_prev_bids)*self.popularity()/self.prev_popularity
+			return [(self.id, ask_amount, self.coins)]
