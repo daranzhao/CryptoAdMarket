@@ -19,6 +19,9 @@ rounds = 2
 prev_bids = None
 prev_prices = [None] * num_creators
 
+for c in creators:
+	print "hi"
+
 for i in range(rounds):
 	# create bid list from all advertisers and viewers
 	# keep track of where bids are coming from
@@ -97,6 +100,33 @@ for i in range(rounds):
 				new_bids = [(sorted_bids[0][0], sorted_bids[0][1], sorted_bids[0][2] - sorted_asks[0][2], sorted_bids[0][3], sorted_bids[0][4])] + sorted_bids[1:]
 				return get_batch_price(new_bids, sorted_asks[1:], np.average([sorted_bids[0][1],sorted_asks[0][1]]))
 
+	def get_batch_transactions(sorted_bids, sorted_asks, transactions):
+		if not sorted_bids or not sorted_asks or sorted_bids[0][1] < sorted_asks[0][1]:
+			return transactions
+		elif sorted_bids[0][2] == 0:
+			return get_batch_transactions(sorted_bids[1:], sorted_asks, transactions)
+		else:
+			a_type = sorted_asks[0][3]
+			a_id = sorted_asks[0][4]
+			b_type = sorted_bids[0][3]
+			b_id = sorted_bids[0][4]
+			if sorted_bids[0][2] == sorted_asks[0][2]:
+				amount = sorted_bids[0][2]
+				transactions.append( (a_type,a_id,b_type,b_id,amount) )
+				return get_batch_transactions(sorted_bids[1:], sorted_asks[1:], transactions)
+			elif sorted_bids[0][2] < sorted_asks[0][2]:
+				amount = sorted_bids[0][2]
+				transactions.append( (a_type,a_id,b_type,b_id,amount) )
+				new_asks = [(sorted_asks[0][0], sorted_asks[0][1], sorted_asks[0][2] - sorted_bids[0][2], sorted_asks[0][3], sorted_asks[0][4])] + sorted_asks[1:]
+				return get_batch_transactions(sorted_bids[1:], new_asks, transactions)
+			
+			elif sorted_bids[0][2] > sorted_asks[0][2]:
+				amount = sorted_asks[0][2]
+				transactions.append( (a_type,a_id,b_type,b_id,amount) )
+				new_bids = [(sorted_bids[0][0], sorted_bids[0][1], sorted_bids[0][2] - sorted_asks[0][2], sorted_bids[0][3], sorted_bids[0][4])] + sorted_bids[1:]
+				return get_batch_transactions(new_bids, sorted_asks[1:], transactions)
+	
+
 	# for each coin: match bid list and ask list
 	for c_id in range(num_creators):
 		bids_on_c = current_bids[c_id]
@@ -109,14 +139,37 @@ for i in range(rounds):
 		# match pairs one by one to find batch price
 		batch_price = get_batch_price(sorted_bids, sorted_asks, None)
 
-		
-		# populate prev_prices[coin] to be the batch price
-			# if no batch price then prev_prices stays the same
-		# go through matched pairs, for each match:
-			# take away matched coin from asker, give them USD corresponding to matched coin * median price
-			# take away matched USD corresponding to matched coin times median price from bidder and give them coin
-			# update wallet amt for bidders (also avg price) and askers
+		transactions = get_batch_transactions(sorted_bids,sorted_asks,[])
 
+		# populate prev_prices[coin] to be the batch price
+		# if no batch price then prev_prices stays the same
+		if batch_price:
+			prev_prices[c_id] = batch_price
+			
+		# go through matched pairs, for each match:
+		for t in transactions:
+			coin_amount = t[4]
+			# take away matched coin from asker, give them USD corresponding to matched coin * median price
+			# update wallet
+			a_type = t[0]
+			a_id = t[1]
+			if a_type == 'v':
+				viewers[a_id].update_wallet(c_id, batch_price, -coin_amount)
+				viewers[a_id].budget += coin_amount*batch_price
+			elif a_type == 'c':
+				creators[a_id].coins -= coin_amount
+				creators[a_id].usd += coin_amount*batch_price
+			
+			# take away matched USD corresponding to matched coin times median price from bidder and give them coin
+			# update wallet
+			b_type = t[2]
+			b_id = t[3]
+			if b_type == 'v':
+				viewers[b_id].update_wallet(c_id, batch_price, coin_amount)
+				viewers[b_id].budget -= coin_amount*batch_price
+			elif b_type == 'a':
+				advertisers[b_id].update_wallet(c_id, batch_price, coin_amount)
+				advertisers[b_id].budget -= coin_amount*batch_price
 
 	# let advertisers run ads
 	for a in advertisers:
