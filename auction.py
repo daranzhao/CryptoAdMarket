@@ -12,6 +12,9 @@ num_advertisers = 10
 num_viewers = 40
 
 creators = [Creator(i, 5, 1000) for i in range(num_creators)]
+creators[0].max_p=30
+creators[1].max_p=20
+creators[2].max_p=8
 advertisers = [Advertiser(i, 1000, num_creators) for i in range(num_advertisers)]
 viewers = [Viewer(i, 100, num_creators) for i in range(num_viewers)]
 
@@ -19,19 +22,19 @@ rounds = 20
 prev_bids = None
 prev_prices = [None] * num_creators
 
-print "VALUE AT BEGINNING"
+creator_values = [[i] for i in range(num_creators)]
+advertiser_values = [[i] for i in range(num_advertisers)]
+viewer_values = [[i] for i in range(num_viewers)]
 
-print "Creators:"
+
 for c in creators:
-	print str(c.id) + ": "+ str(c.approx_val(prev_bids, advertisers))
+	creator_values[c.id].append(c.approx_val(prev_bids, advertisers))
 
-print "Advertisers:"
 for a in advertisers:
-	print str(a.id) + ": "+ str(a.budget)
+	advertiser_values[a.id].append(a.budget)
 
-print "Viewers:"
 for v in viewers:
-	print str(v.id) + ": "+ str(v.budget)
+	viewer_values[v.id].append(v.budget)
 
 for i in range(rounds):
 	# create bid list from all advertisers and viewers
@@ -193,16 +196,32 @@ for i in range(rounds):
 	prev_bids = current_bids
 
 
-print "VALUE AT END"
-
-print "Creators:"
 for c in creators:
-	print str(c.id) + ": "+ str(c.approx_val(prev_bids, advertisers))
+	creator_values[c.id].append(c.approx_val(prev_bids, advertisers))
 
-print "Advertisers:"
 for a in advertisers:
-	print str(a.id) + ": "+ str(a.approx_val(creators))
+	advertiser_values[a.id].append(a.approx_val(creators))
 
-print "Viewers:"
 for v in viewers:
-	print str(v.id) + ": "+ str(v.approx_val(prev_prices))
+	viewer_values[v.id].append(v.approx_val(prev_prices))
+
+print "[CREATOR, INITIAL VALUE, FINAL VALUE]"
+for v in creator_values:
+	print v
+
+print "[ADVERTISER, INITIAL VALUE, FINAL VALUE]"
+for v in advertiser_values:
+	print v
+
+print "[VIEWER, INITIAL VALUE, FINAL VALUE]"
+for v in viewer_values:
+	print v
+
+print "Average Creator Percent Profit"
+print np.average([(v[2]-v[1])/v[1] for v in creator_values])
+
+print "Average Advertiser Percent Profit"
+print np.average([(v[2]-v[1])/v[1] for v in advertiser_values])
+
+print "Average Viewer Percent Profit"
+print np.average([(v[2]-v[1])/v[1] for v in viewer_values])

@@ -1,4 +1,5 @@
 import numpy as np
+from operator import itemgetter
 
 class Advertiser:
   def __init__(self, id, budget, num_creators):
@@ -17,6 +18,25 @@ class Advertiser:
   # use function above and some logic to return
   # tuple of creator_id, bid, and amount
   def bid_strategy(self, cv_tuple):
+  	#return self.random_all_in(cv_tuple)
+  	return self.high_val_all_in(cv_tuple)
+
+  def high_val_all_in(self,cv_tuple):
+    bid_lst = []
+    sorted_cv = sorted(cv_tuple, key=itemgetter(1), reverse=True)
+    for i in range(len(sorted_cv)):
+      index, value = sorted_cv[i]
+      price = self.val_to_bid(value)
+      if i == 0:
+        quantity = self.budget/price
+      else:
+        quantity = 0
+      full_tuple = (index, price, quantity)
+      bid_lst.append(full_tuple)
+    return bid_lst
+
+  # very naive strategy where we randomly pick a creator to all-in
+  def random_all_in(self, cv_tuple):
     bid_lst = []
     rand_index = np.random.randint(0,self.num_creators)
     for index, value in cv_tuple:
