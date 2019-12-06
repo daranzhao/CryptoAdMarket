@@ -31,5 +31,5 @@ class Creator:
 					if bid[0] == self.id:
 						# bid = (creator, bid price, amount)
 						my_prev_bids.append(bid[1])
-			ask_amount = np.average(my_prev_bids)*self.popularity()/self.prev_popularity
-			return [(self.id, ask_amount, self.coins)]
+			ask_price = np.average(my_prev_bids)*self.popularity()/self.prev_popularity
+			return [(self.id, ask_price, self.coins)]
