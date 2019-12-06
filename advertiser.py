@@ -44,7 +44,7 @@ class Advertiser:
     for i in range(len(self.wallet)):
       E = creators[i].popularity() * self.quality * self.match_vals[i]
       if self.wallet[i][1] > E:
-        pass
+        continue
       else:
         self.budget += E*self.wallet[i][0]
         creators[i].coins += self.wallet[i][0]
@@ -54,9 +54,7 @@ class Advertiser:
   def update_wallet(self, creator_id, price, amount):
     if amount > 0:
       wallet[creator_id][1] = (wallet[creator_id][0] * wallet[creator_id][1] + price * amount) / (wallet[creator_id][0] + amount)
-
     wallet[creator_id][0] += amount
-
 
 
   def asks(self):
