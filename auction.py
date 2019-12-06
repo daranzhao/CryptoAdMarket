@@ -16,6 +16,23 @@ viewers = [Viewer(i, 100, num_creators) for i in range(num_viewers)]
 
 rounds = 25
 prev_bids = None
+prev_prices = None
 
 for i in range(rounds):
-	# 
+	# create bid list from all advertisers and viewers
+	# keep track of where bids are coming from
+
+	# create ask list from all creators and viewers
+	# keep track of where asks are coming from
+
+	# for each coin: match bid list and ask list
+		# sort bids and asks in the correct order
+		# match pairs one by one to find batch price
+		# go through matched pairs, for each match:
+			# take away matched coin from asker, give them USD corresponding to matched coin * median price
+			# take away matched USD corresponding to matched coin times median price from bidder and give them coin
+			# update wallet amt for bidders (also avg price) and askers
+
+	# let advertisers run ads
+
+	# update creator popularities
