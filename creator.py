@@ -1,23 +1,24 @@
 import numpy as np
 
-class Creator(id, max_p, total_coin):
-	self.id = id # 0 through C
-	self.usd = 0
-	self.coins = total_coin
-	self.max_p = max_p
-	self.pop_index = 0
-	self.low, self.high = -0.05, 0.1
-	self.prev_popularity = None
+class Creator:
+	def __init__(self, id, max_p, total_coin):
+		self.id = id # 0 through C
+		self.usd = 0
+		self.coins = total_coin
+		self.max_p = max_p
+		self.pop_index = 0
+		self.low, self.high = -0.05, 0.1
+		self.prev_popularity = None
 
-	def popularity():
+	def popularity(self):
 		return self.max_p/(1+np.exp(-self.pop_index/self.max_p))
 
-	def next_index():
+	def next_index(self):
 		self.prev_popularity = self.popularity()
 		self.pop_index += np.random.uniform(self.low,self.high)
 
 	# prev_bids is list of bid_lsts (list of triples)
-	def asks(prev_bids, bidders):
+	def asks(self, prev_bids, bidders):
 		if prev_bids == None:
 			accum = 0
 			for bidder in bidders:
