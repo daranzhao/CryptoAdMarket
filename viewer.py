@@ -34,3 +34,10 @@ class Viewer:
 			else:
 				pass
 		return ask_lst
+
+	# creator_id is equivalent to coin_id
+  def update_wallet(self, creator_id, price, amount):
+    if amount > 0:
+      wallet[creator_id][1] = (wallet[creator_id][0] * wallet[creator_id][1] + price * amount) / (wallet[creator_id][0] + amount)
+
+    wallet[creator_id][0] += amount
