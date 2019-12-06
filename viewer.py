@@ -4,7 +4,7 @@ class Viewer:
 	def __init__(self, id, budget, num_creators):
 		self.id = id # 0 through V
 		self.budget = budget
-		self.wallet = [[0,0]] * num_creators # [amount, avg price paid]
+		self.wallet = [[0 for i in range(2)] for j in range(num_creators)] # [amount, avg price paid]
 		self.match_vals = np.random.rand(num_creators).tolist()
 		self.pref_order = np.argsort(self.match_vals)[::-1]
 
@@ -40,3 +40,7 @@ class Viewer:
 		if amount > 0:
 			self.wallet[creator_id][1] = (self.wallet[creator_id][0] * self.wallet[creator_id][1] + price * amount) / (self.wallet[creator_id][0] + amount)
 		self.wallet[creator_id][0] += amount
+
+	def approx_val(self, prev_prices):
+		prev_prices = [p if p else 0 for p in prev_prices]
+		return self.budget + sum([self.wallet[i][0]*prev_prices[i] for i in range(len(self.wallet))])

@@ -33,3 +33,19 @@ class Creator:
 						my_prev_bids.append(bid[1])
 			ask_price = np.average(my_prev_bids)*self.popularity()/self.prev_popularity
 			return [(self.id, ask_price, self.coins)]
+
+	def approx_val(self, prev_bids, advertisers):
+		if prev_bids == None:
+			accum = 0
+			for advertiser in advertisers:
+				accum += advertiser.val_to_bid(0.25*self.popularity())
+			approx_price = accum/len(advertisers)
+		else:
+			my_prev_bids = []
+			for bid_lst in prev_bids:
+				for bid in bid_lst:
+					if bid[0] == self.id:
+						# bid = (creator, bid price, amount)
+						my_prev_bids.append(bid[1])
+			approx_price = np.average(my_prev_bids)*self.popularity()/self.prev_popularity
+		return self.usd + self.coins * approx_price

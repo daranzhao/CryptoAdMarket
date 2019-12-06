@@ -4,7 +4,7 @@ class Advertiser:
   def __init__(self, id, budget, num_creators):
     self.id = id # 0 through A
     self.budget = budget
-    self.wallet = [[0,0]] * num_creators # [amount, avg price paid]
+    self.wallet = [[0 for i in range(2)] for j in range(num_creators)] # [amount, avg price paid]
     self.quality = np.random.uniform(0,1)
     self.match_vals = np.random.rand(num_creators).tolist()
     self.num_creators = num_creators
@@ -56,9 +56,15 @@ class Advertiser:
       self.wallet[creator_id][1] = (self.wallet[creator_id][0] * self.wallet[creator_id][1] + price * amount) / (self.wallet[creator_id][0] + amount)
     self.wallet[creator_id][0] += amount
 
-
   def asks(self):
     pass
+
+  def approx_val(self, creators):
+  	ad_dump = 0
+  	for i in range(len(self.wallet)):
+  		E = creators[i].popularity() * self.quality * self.match_vals[i]
+  		ad_dump += E*self.wallet[i][0]
+  	return self.budget + ad_dump
 
 
 

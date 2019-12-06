@@ -4,23 +4,34 @@ from viewer import Viewer
 from advertiser import Advertiser
 from operator import itemgetter
 
-np.random.seed(0)
+#np.random.seed(0)
 
 # creating players
-num_creators = 3
-num_advertisers = 3
-num_viewers = 3
+num_creators = 15
+num_advertisers = 10
+num_viewers = 40
 
 creators = [Creator(i, 5, 1000) for i in range(num_creators)]
 advertisers = [Advertiser(i, 1000, num_creators) for i in range(num_advertisers)]
 viewers = [Viewer(i, 100, num_creators) for i in range(num_viewers)]
 
-rounds = 2
+rounds = 20
 prev_bids = None
 prev_prices = [None] * num_creators
 
+print "VALUE AT BEGINNING"
+
+print "Creators:"
 for c in creators:
-	print "hi"
+	print str(c.id) + ": "+ str(c.approx_val(prev_bids, advertisers))
+
+print "Advertisers:"
+for a in advertisers:
+	print str(a.id) + ": "+ str(a.budget)
+
+print "Viewers:"
+for v in viewers:
+	print str(v.id) + ": "+ str(v.budget)
 
 for i in range(rounds):
 	# create bid list from all advertisers and viewers
@@ -180,3 +191,18 @@ for i in range(rounds):
 		c.next_index()
 
 	prev_bids = current_bids
+
+
+print "VALUE AT END"
+
+print "Creators:"
+for c in creators:
+	print str(c.id) + ": "+ str(c.approx_val(prev_bids, advertisers))
+
+print "Advertisers:"
+for a in advertisers:
+	print str(a.id) + ": "+ str(a.approx_val(creators))
+
+print "Viewers:"
+for v in viewers:
+	print str(v.id) + ": "+ str(v.approx_val(prev_prices))
